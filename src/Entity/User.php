@@ -2,87 +2,81 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
+use App\Entity\WebauthnCredential;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+#[ORM\Entity]
+#[ORM\Table(name: '`user`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $id;
+
+    #[ORM\Column(length: 180, unique: true)]
+    private string $email;
+
+    #[ORM\Column(type: 'text')]
+    private string $roles; // stocke le JSON manuellement
+
+    #[ORM\OneToMany(
+        mappedBy: 'user',
+        targetEntity: WebauthnCredential::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $webauthnCredentials;
+
     #[ORM\Column]
-    private ?int $id = null;
+    private ?string $password = null; // nécessaire pour Symfony Security
 
-    #[ORM\Column(length: 180)]
-    private ?string $username = null;
+    public function __construct(string $email)
+    {
+        $this->id = Uuid::v4();
+        $this->email = $email;
+        $this->webauthnCredentials = new ArrayCollection();
+        $this->roles = json_encode(['ROLE_USER']);
+    }
 
-    /**
-     * @var list<string> The user roles
-     */
-    #[ORM\Column]
-    private array $roles = [];
-
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column]
-    private ?string $password = null;
-
-    public function getId(): ?int
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getEmail(): string
     {
-        return $this->username;
+        return $this->email;
     }
 
-    public function setUsername(string $username): static
+    public function setEmail(string $email): static
     {
-        $this->username = $username;
-
+        $this->email = $email;
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        $roles = json_decode($this->roles ?? '[]', true);
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
-
+        $this->roles = json_encode($roles);
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -91,24 +85,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
-        return $data;
-    }
-
-    #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
+        // rien à effacer pour le moment
+    }
+
+    /** @return Collection<int, WebauthnCredential> */
+    public function getWebauthnCredentials(): Collection
+    {
+        return $this->webauthnCredentials;
+    }
+
+    public function addWebauthnCredential(WebauthnCredential $credential): static
+    {
+        if (!$this->webauthnCredentials->contains($credential)) {
+            $this->webauthnCredentials->add($credential);
+            $credential->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeWebauthnCredential(WebauthnCredential $credential): static
+    {
+        if ($this->webauthnCredentials->removeElement($credential)) {
+            // unset the owning side
+            if ($credential->getUser() === $this) {
+                $credential->setUser(null);
+            }
+        }
+        return $this;
     }
 }

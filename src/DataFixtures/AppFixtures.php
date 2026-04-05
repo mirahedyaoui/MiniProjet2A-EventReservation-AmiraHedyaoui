@@ -4,13 +4,15 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use App\Entity\Event;
+use App\Entity\WebauthnCredential;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Webauthn\PublicKeyCredentialSource;
 
 class AppFixtures extends Fixture
 {
-    private $hasher;
+    private UserPasswordHasherInterface $hasher;
 
     public function __construct(UserPasswordHasherInterface $hasher)
     {
@@ -19,21 +21,28 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // 1. Création de l'Admin pour le projet (indispensable pour JWT)
-        $admin = new User();
-        $admin->setUsername('admin');
+        // 1️⃣ Création de l'admin
+        $admin = new User('admin@example.com'); // email utilisé comme identifiant
         $admin->setRoles(['ROLE_ADMIN']);
-        // On hache le mot de passe "admin123"
         $password = $this->hasher->hashPassword($admin, 'admin123');
         $admin->setPassword($password);
         $manager->persist($admin);
 
-        // 2. Création de quelques événements de test
+        // Optionnel : ajouter un WebauthnCredential de test pour admin
+        // $credentialSource = PublicKeyCredentialSource::createFromArray([
+        //     "id" => "some_id",
+        //     "type" => "public-key",
+        //     "transports" => ["usb"]
+        // ]);
+        // $webauthn = new WebauthnCredential($admin, "Admin Security Key", $credentialSource);
+        // $manager->persist($webauthn);
+
+        // 2️⃣ Création de quelques événements de test
         for ($i = 1; $i <= 5; $i++) {
             $event = new Event();
             $event->setTitle("Événement ISSAT $i");
             $event->setDescription("Description détaillée de l'événement $i");
-            $event->setDate(new \DateTime("+ $i days"));
+            $event->setDate(new \DateTime("+$i days"));
             $event->setLocation("Sousse");
             $event->setSeats(50);
             $event->setImage("https://via.placeholder.com/150");

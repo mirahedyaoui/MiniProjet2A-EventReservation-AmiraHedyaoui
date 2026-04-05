@@ -8,7 +8,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: username
+                property: email
 
     # 3. Les pare-feu (Firewalls) - DOIVENT être décalés à droite
     firewalls:
@@ -22,7 +22,7 @@ security:
             stateless: true
             json_login:
                 check_path: /api/login_check
-                username_path: username
+                username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
