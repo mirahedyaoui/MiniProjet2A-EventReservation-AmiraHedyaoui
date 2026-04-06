@@ -3,20 +3,21 @@ security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-    # 2. Où trouver les utilisateurs
+    # 2. Fournisseur d'utilisateurs
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
 
-    # 3. Les pare-feu (Firewalls) - DOIVENT être décalés à droite
+    # 3. Firewalls
     firewalls:
+        # Dev (profiling)
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
 
-        # Firewall spécifique pour la connexion et génération du Token
+        # Login classique JWT
         login:
             pattern: ^/api/login_check
             stateless: true
@@ -27,22 +28,29 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-        # Firewall pour protéger toutes les autres routes API
+        # Endpoints Passkey / WebAuthn
+        auth_api:
+            pattern: ^/api/auth/(register|login)
+            stateless: true
+            security: false
+
+        # API principale protégée par JWT
         api:
             pattern: ^/api
             stateless: true
             jwt: ~
 
-        # Firewall par défaut
+        # Firewall par défaut pour les autres routes
         main:
             lazy: true
             provider: app_user_provider
 
-    # 4. Contrôle d'accès (Access Control)
+    # 4. Contrôle d'accès
     access_control:
-        # Route de login accessible à tous
+        # Routes publiques
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
-        # Lecture des événements accessible à tous (GET)
-        - { path: ^/api/events, roles: PUBLIC_ACCESS, methods: [GET] }
-        # Modification des événements réservée à l'ADMIN (POST, PUT, DELETE)
-        - { path: ^/api/events, roles: ROLE_ADMIN, methods: [POST, PUT, DELETE] }
+        - { path: ^/api/auth/(register|login), roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+
+        # Routes protégées
+        - { path: ^/api, roles: ROLE_USER }

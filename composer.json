@@ -21,8 +21,8 @@
         "symfony/security-bundle": "7.4.*",
         "symfony/uid": "7.4.*",
         "symfony/yaml": "7.4.*",
-        "web-auth/webauthn-lib": "^5.2",
-        "web-auth/webauthn-symfony-bundle": "^5.2"
+        "web-auth/webauthn-lib": "*",
+        "web-auth/webauthn-symfony-bundle": "*"
     },
     "config": {
         "allow-plugins": {
