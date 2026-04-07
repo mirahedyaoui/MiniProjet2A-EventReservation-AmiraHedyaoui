@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mon App{% endblock %}</title>
+    <link rel="stylesheet" href="/css/style.css"> {# ou Tailwind CDN #}
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ path('user_events') }}">Événements</a>
+            {% if app.user %}
+                <a href="{{ path('logout') }}">Déconnexion</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Mon App</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'événement{% endblock %}
+
+{% block body %}
+<h1>Modifier l'événement</h1>
+
+{% for message in app.flashes('success') %}
+    <div style="color:green">{{ message }}</div>
+{% endfor %}
+
+<form method="post">
+    <label>Title: 
+        <input type="text" name="title" value="{{ event.title }}" required>
+    </label><br>
+
+    <label>Description: 
+        <input type="text" name="description" value="{{ event.description }}" required>
+    </label><br>
+
+    <label>Date: 
+        <input type="date" name="date" value="{{ event.date ? event.date|date('Y-m-d') : '' }}" required>
+    </label><br>
+
+    <label>Location: 
+        <input type="text" name="location" value="{{ event.location }}" required>
+    </label><br>
+
+    <label>Seats: 
+        <input type="number" name="seats" value="{{ event.seats }}" required>
+    </label><br>
+
+    <label>Image URL: 
+        <input type="text" name="image" value="{{ event.image }}" required>
+    </label><br>
+
+    <button type="submit">Enregistrer les modifications</button>
+</form>
+
+<a href="{{ path('admin_dashboard') }}">Retour au dashboard</a>
+{% endblock %}

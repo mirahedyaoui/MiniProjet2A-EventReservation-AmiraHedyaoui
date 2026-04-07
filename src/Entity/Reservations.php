@@ -87,7 +87,7 @@ class Reservations
         return $this->event_id;
     }
 
-    public function setEventId(?Event $event_id): static
+    public function setEventid(?Event $event_id): static
     {
         $this->event_id = $event_id;
 

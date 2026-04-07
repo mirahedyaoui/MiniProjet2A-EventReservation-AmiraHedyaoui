@@ -28,14 +28,6 @@ class AppFixtures extends Fixture
         $admin->setPassword($password);
         $manager->persist($admin);
 
-        // Optionnel : ajouter un WebauthnCredential de test pour admin
-        // $credentialSource = PublicKeyCredentialSource::createFromArray([
-        //     "id" => "some_id",
-        //     "type" => "public-key",
-        //     "transports" => ["usb"]
-        // ]);
-        // $webauthn = new WebauthnCredential($admin, "Admin Security Key", $credentialSource);
-        // $manager->persist($webauthn);
 
         // 2️⃣ Création de quelques événements de test
         for ($i = 1; $i <= 5; $i++) {

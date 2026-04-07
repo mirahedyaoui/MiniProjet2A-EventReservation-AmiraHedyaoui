@@ -19,8 +19,10 @@
         "symfony/http-client": "7.4.*",
         "symfony/runtime": "7.4.*",
         "symfony/security-bundle": "7.4.*",
+        "symfony/twig-bundle": "7.4.*",
         "symfony/uid": "7.4.*",
         "symfony/yaml": "7.4.*",
+        "twig/twig": "^3.24",
         "web-auth/webauthn-lib": "^5.2",
         "web-auth/webauthn-symfony-bundle": "^5.2"
     },

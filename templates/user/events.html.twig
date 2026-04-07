@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}Événements{% endblock %}
+
+{% block body %}
+<h1>Événements</h1>
+<ul>
+    {% for event in events %}
+        <li>
+            <h2>{{ event.title }}</h2>
+            <p>{{ event.date|date('d/m/Y') }} - {{ event.location }}</p>
+            <img src="{{ event.image }}" alt="{{ event.title }}" width="200">
+            <a href="{{ path('user_event_detail', {'id': event.id}) }}">Voir détails</a>
+        </li>
+    {% else %}
+        <li>Aucun événement disponible</li>
+    {% endfor %}
+</ul>
+{% endblock %}

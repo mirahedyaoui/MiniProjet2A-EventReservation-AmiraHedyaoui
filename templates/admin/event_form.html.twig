@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+{% block title %}Formulaire Événement{% endblock %}
+
+{% block body %}
+<h1>{{ event ? 'Modifier' : 'Créer' }} un événement</h1>
+<form method="post" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Titre" value="{{ event.title ?? '' }}" required>
+    <input type="text" name="location" placeholder="Lieu" value="{{ event.location ?? '' }}" required>
+    <input type="date" name="date" value="{{ event.date ? event.date|date('Y-m-d') : '' }}" required>
+    <input type="number" name="seats" placeholder="Places" value="{{ event.seats ?? '' }}" required>
+    <input type="text" name="image" placeholder="URL image" value="{{ event.image ?? '' }}">
+    <textarea name="description" placeholder="Description">{{ event.description ?? '' }}</textarea>
+    <button type="submit">{{ event ? 'Mettre à jour' : 'Créer' }}</button>
+</form>
+{% endblock %}

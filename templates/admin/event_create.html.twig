@@ -1,0 +1,24 @@
+{# templates/admin/event_create.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un événement{% endblock %}
+
+{% block body %}
+<h1>Créer un nouvel événement</h1>
+
+{% for message in app.flashes('success') %}
+    <div style="color:green">{{ message }}</div>
+{% endfor %}
+
+<form method="post">
+    <label>Title: <input type="text" name="title" required></label><br>
+    <label>Description: <input type="text" name="description" required></label><br>
+    <label>Date: <input type="date" name="date" required></label><br>
+    <label>Location: <input type="text" name="location" required></label><br>
+    <label>Seats: <input type="number" name="seats" required></label><br>
+    <label>Image URL: <input type="text" name="image" required></label><br>
+    <button type="submit">Créer</button>
+</form>
+
+<a href="{{ path('admin_dashboard') }}">Retour au dashboard</a>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block title %}Réservations{% endblock %}
+
+{% block body %}
+<h1>Réservations pour {{ event.title }}</h1>
+<ul>
+    {% for r in reservations %}
+        <li>{{ r.name }} - {{ r.email }} - {{ r.phone }} - {{ r.created_at|date('d/m/Y H:i') }}</li>
+    {% else %}
+        <li>Aucune réservation</li>
+    {% endfor %}
+</ul>
+{% endblock %}

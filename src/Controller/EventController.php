@@ -99,4 +99,5 @@ class EventController extends AbstractController
 
         return $this->json(['message' => 'Deleted']);
     }
+    
 }
